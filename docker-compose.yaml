@@ -1,0 +1,96 @@
+version: "3.2"
+services:
+  zero1:
+    image: dgraph/dgraph:latest
+    volumes:
+      - data-volume1:/dgraph
+    ports:
+      - 5080:5080
+      - 6080:6080
+    command: dgraph zero --my=zero1:5080 --replicas 3 --idx 1
+  zero2:
+    image: dgraph/dgraph:latest
+    volumes:
+      - data-volume2:/dgraph
+    ports:
+      - 5081:5081
+      - 6081:6081
+    command: dgraph zero -o 1 --my=zero2:5081 --replicas 3 --peer zero1:5080 --idx 2
+  zero3:
+    image: dgraph/dgraph:latest
+    volumes:
+      - data-volume3:/dgraph
+    ports:
+      - 5082:5082
+      - 6082:6082
+    command: dgraph zero -o 2 --my=zero3:5082 --replicas 3 --peer zero1:5080 --idx 3
+  alpha1:
+    image: dgraph/dgraph:latest
+    hostname: "alpha1"
+    volumes:
+      - data-volume-app1:/dgraph
+    ports:
+      - 8080:8080
+      - 9080:9080
+    command: dgraph alpha --my=alpha1:7080 --lru_mb=2048 --zero=zero1:5080,zero2:5080,zero3:5080
+  alpha2:
+    image: dgraph/dgraph:latest
+    hostname: "alpha2"
+    volumes:
+      - data-volume-app2:/dgraph
+    ports:
+      - 8081:8081
+      - 9081:9081
+    command: dgraph alpha --my=alpha2:7081 --lru_mb=2048 --zero=zero1:5080,zero2:5080,zero3:5080 -o 1
+  alpha3:
+    image: dgraph/dgraph:latest
+    hostname: "alpha3"
+    volumes:
+      - data-volume-app3:/dgraph
+    ports:
+      - 8082:8082
+      - 9082:9082
+    command: dgraph alpha --my=alpha3:7082 --lru_mb=2048 --zero=zero1:5080,zero2:5080,zero3:5080 -o 2
+  alpha4:
+    image: dgraph/dgraph:latest
+    hostname: "alpha4"
+    volumes:
+      - data-volume-app4:/dgraph
+    ports:
+      - 8083:8083
+      - 9083:9083
+    command: dgraph alpha --my=alpha4:7083 --lru_mb=2048 --zero=zero1:5080,zero2:5080,zero3:5080 -o 3
+  alpha5:
+    image: dgraph/dgraph:latest
+    hostname: "alpha5"
+    volumes:
+      - data-volume-app5:/dgraph
+    ports:
+      - 8084:8084
+      - 9084:9084
+    command: dgraph alpha --my=alpha5:7084 --lru_mb=2048 --zero=zero1:5080,zero2:5080,zero3:5080 -o 4
+  alpha6:
+    image: dgraph/dgraph:latest
+    hostname: "alpha6"
+    volumes:
+      - data-volume-app6:/dgraph
+    ports:
+      - 8085:8085
+      - 9085:9085
+    command: dgraph alpha --my=alpha6:7085 --lru_mb=2048 --zero=zero1:5080,zero2:5080,zero3:5080 -o 5
+  ratel:
+    image: dgraph/dgraph:latest
+    hostname: "ratel"
+    ports:
+      - 8000:8000
+    command: dgraph-ratel
+volumes:
+  data-volume1:
+  data-volume2:
+  data-volume3:
+  data-volume-app1:
+  data-volume-app2:
+  data-volume-app3:
+  data-volume-app4:
+  data-volume-app5:
+  data-volume-app6:
